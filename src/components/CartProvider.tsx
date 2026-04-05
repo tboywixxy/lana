@@ -14,12 +14,17 @@ export type CartItem = {
   name: string;
   price: number;
   image: string;
+  size: string;
   quantity: number;
+};
+
+type AddToCartItem = Omit<CartItem, "quantity"> & {
+  quantity?: number;
 };
 
 type CartContextType = {
   items: CartItem[];
-  addToCart: (item: Omit<CartItem, "quantity">) => void;
+  addToCart: (item: AddToCartItem) => void;
   removeFromCart: (id: string | number) => void;
   updateQuantity: (id: string | number, quantity: number) => void;
   clearCart: () => void;
@@ -30,36 +35,44 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    try {
-      const saved = localStorage.getItem("lana-cart");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    localStorage.setItem("lana-cart", JSON.stringify(items));
+    try {
+      const saved = localStorage.getItem("lana-cart");
+      if (saved) {
+        setItems(JSON.parse(saved));
+      }
+    } catch {
+      setItems([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("lana-cart", JSON.stringify(items));
+    } catch {
+      // ignore localStorage write errors
+    }
   }, [items]);
 
-  function addToCart(item: Omit<CartItem, "quantity">) {
+  function addToCart(item: AddToCartItem) {
+    const quantityToAdd = item.quantity ?? 1;
+
     setItems((prev) => {
-      const existing = prev.find((cartItem) => cartItem.id === item.id);
+      const existing = prev.find(
+        (cartItem) => cartItem.id === item.id && cartItem.size === item.size
+      );
 
       if (existing) {
         return prev.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          cartItem.id === item.id && cartItem.size === item.size
+            ? { ...cartItem, quantity: cartItem.quantity + quantityToAdd }
             : cartItem
         );
       }
 
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, quantity: quantityToAdd }];
     });
   }
 
@@ -69,7 +82,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function updateQuantity(id: string | number, quantity: number) {
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+      )
     );
   }
 

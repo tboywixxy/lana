@@ -58,26 +58,25 @@ export default function TestimonialsPage() {
 
   return (
     <>
-      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto w-full max-w-7xl">
           <div className="mb-8">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d9a441]">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
               Testimonials
             </p>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               What customers are saying
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">
               Real feedback from shoppers who have ordered from LANA Store.
-              Tap any photo to view it in full size.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {testimonials.map((item) => (
               <article
                 key={item.id}
-                className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]"
+                className="overflow-hidden rounded-[1.8rem] border border-[var(--border)] bg-[var(--card)] shadow-sm"
               >
                 <button
                   type="button"
@@ -90,23 +89,23 @@ export default function TestimonialsPage() {
                   }
                   aria-label={`View ${item.name} image`}
                 >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-black">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--surface)]">
                     <Image
                       src={item.image}
                       alt={`${item.name} testimonial photo`}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                      className="object-cover transition duration-300 hover:scale-[1.03]"
+                      className="object-cover"
                     />
                   </div>
                 </button>
 
-                <div className="p-4">
-                  <h2 className="text-base font-semibold">{item.name}</h2>
-                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[#d9a441]">
+                <div className="p-5">
+                  <h2 className="text-base font-semibold text-[var(--foreground)]">{item.name}</h2>
+                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--accent)]">
                     {item.role}
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-white/70">“{item.quote}”</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">“{item.quote}”</p>
                 </div>
               </article>
             ))}
@@ -116,7 +115,7 @@ export default function TestimonialsPage() {
 
       {activeImage ? (
         <div
-          className="fixed inset-0 z-[120] bg-black/85 px-4 py-8"
+          className="fixed inset-0 z-[120] bg-black/65 px-4 py-8"
           role="dialog"
           aria-modal="true"
           aria-label="Testifier image preview"
@@ -125,7 +124,7 @@ export default function TestimonialsPage() {
           <div className="mx-auto flex h-full w-full max-w-5xl items-center justify-center">
             <button
               type="button"
-              className="absolute right-6 top-6 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/10 text-xl text-white"
+              className="absolute right-6 top-6 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xl text-white"
               aria-label="Close image preview"
               onClick={() => setActiveImage(null)}
             >

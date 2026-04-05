@@ -7,6 +7,9 @@ import { CartProvider } from "@/components/CartProvider";
 export const metadata: Metadata = {
   title: "LANA Store",
   description: "Simple premium online store",
+  icons: {
+    icon: '/lana-favicon.ico',
+  },
 };
 
 export default function RootLayout({

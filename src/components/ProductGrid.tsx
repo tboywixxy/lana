@@ -20,19 +20,10 @@ export default function ProductGrid({ products }: { products: Product[] }) {
 
   return (
     <>
-      <section id="products" className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="mb-5">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d9a441]">
-              Products
-            </p>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Available items
-            </h2>
-          </div>
-
+      <section id="products" className="px-3 py-4 sm:px-5 lg:px-6">
+        <div className="mx-auto w-full max-w-[1600px]">
           {products.length ? (
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {products.map((product, index) => (
                 <ProductCard
                   key={product.id}
@@ -43,10 +34,9 @@ export default function ProductGrid({ products }: { products: Product[] }) {
               ))}
             </div>
           ) : (
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-10 text-center">
-              <h3 className="text-2xl font-semibold">No products yet</h3>
-              <p className="mt-3 text-sm text-white/65 sm:text-base">
-                Add and publish products in Sanity Studio to show them here.
+            <div className="py-20 text-center">
+              <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
+                No products yet
               </p>
             </div>
           )}
@@ -58,7 +48,6 @@ export default function ProductGrid({ products }: { products: Product[] }) {
         selectedIndex={selectedIndex}
         open={open}
         onClose={handleClose}
-        onChangeIndex={setSelectedIndex}
       />
     </>
   );

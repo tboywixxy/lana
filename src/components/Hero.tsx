@@ -10,14 +10,26 @@ export default function Hero() {
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       setCollapsed(true);
-    }, 8000);
+    }, 4000);
 
     return () => window.clearTimeout(timeout);
   }, []);
 
   return (
-    <section className="px-4 pb-4 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pt-8">
-      <div className="mx-auto w-full max-w-7xl rounded-3xl border border-white/10 bg-white/[0.02] px-4 py-4 sm:px-5">
+    <section className="relative px-4 pb-4 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pt-8">
+      <div className="absolute inset-0">
+        <Image
+          src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80"
+          alt="Gym equipment background"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/50"></div>
+      </div>
+
+      <div className="relative mx-auto w-full max-w-7xl rounded-3xl border border-white/10 bg-white/[0.02] px-4 py-4 sm:px-5 backdrop-blur-sm">
         <div className="flex items-center justify-between gap-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d9a441]">
             LANA Store
@@ -26,7 +38,7 @@ export default function Hero() {
           <button
             type="button"
             onClick={() => setCollapsed((prev) => !prev)}
-            className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#d9a441]/10 px-4 text-xs font-semibold text-[#d9a441]/85 transition hover:bg-[#d9a441]/5"
+            className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#d9a441]/10 bg-white/10 px-4 text-xs font-semibold text-[#d9a441]/85 backdrop-blur-sm transition hover:bg-[#d9a441]/5"
             aria-expanded={!collapsed}
             aria-label={collapsed ? "Expand hero" : "Collapse hero"}
           >
@@ -35,23 +47,23 @@ export default function Hero() {
         </div>
 
         <div
-          className={`grid overflow-hidden transition-all duration-700 ease-out lg:grid-cols-[1.08fr_0.92fr] ${
+          className={`overflow-hidden transition-all duration-700 ease-out text-center ${
             collapsed
               ? "mt-0 max-h-0 -translate-y-2 opacity-0"
-              : "mt-4 max-h-[1200px] translate-y-0 opacity-100"
+              : "mt-4 max-h-[250px] translate-y-0 opacity-100"
           }`}
         >
           <div>
-            <h1 className="max-w-[11ch] text-4xl font-semibold leading-none tracking-[-0.05em] sm:text-5xl lg:text-7xl">
+            <h1 className="text-4xl font-semibold leading-none tracking-[-0.05em] text-white sm:text-5xl lg:text-6xl">
               Elegant shopping made simple
             </h1>
 
-            <p className="mt-5 max-w-xl text-sm leading-7 text-white/60 sm:text-base">
+            <p className="mt-5 max-w-2xl mx-auto text-sm leading-7 text-white/90 sm:text-base">
               A clean online store for premium fashion, accessories and lifestyle
               pieces with smooth checkout and no stress.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row justify-center">
               <Link
                 href="#products"
                 className="flex min-h-12 items-center justify-center rounded-full bg-[#d9a441] px-6 text-sm font-semibold text-white transition hover:opacity-90"
@@ -60,23 +72,10 @@ export default function Hero() {
               </Link>
               <Link
                 href="/track-order"
-                className="flex min-h-12 items-center justify-center rounded-full border border-white/10 bg-transparent px-6 text-sm font-semibold text-white transition hover:bg-white/5"
+                className="flex min-h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
               >
                 Track order
               </Link>
-            </div>
-          </div>
-
-          <div className="mt-8 flex justify-center lg:mt-0 lg:justify-end">
-            <div className="relative aspect-square w-full max-w-[500px] overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
-              <Image
-                src="/logo.jpg"
-                alt="LANA"
-                fill
-                sizes="(max-width: 1024px) 100vw, 500px"
-                priority
-                className="object-cover"
-              />
             </div>
           </div>
         </div>

@@ -51,5 +51,13 @@ export const productType = defineType({
       of: [{type: 'image'}],
       validation: (rule) => rule.required().min(1),
     }),
+    defineField({
+      name: 'sizes',
+      title: 'Sizes',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: { layout: 'tags' },
+      validation: (rule) => rule.required().min(1),
+    }),
   ],
 })

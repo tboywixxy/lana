@@ -10,6 +10,7 @@ export type Product = {
   description: string
   image: string
   gallery: string[]
+  sizes?: string[]
 }
 
 type ProductQueryRow = {
@@ -20,6 +21,7 @@ type ProductQueryRow = {
   description: string
   image: string | null
   gallery: Array<string | null> | null
+  sizes?: Array<string | null> | null
 }
 
 const productsQuery = groq`
@@ -30,7 +32,8 @@ const productsQuery = groq`
     category,
     description,
     "image": image.asset->url,
-    "gallery": gallery[].asset->url
+    "gallery": gallery[].asset->url,
+    "sizes": sizes[]
   }
 `
 
@@ -50,6 +53,7 @@ export async function getProducts(): Promise<Product[]> {
         description: row.description,
         image: row.image ?? '',
         gallery: gallery.length ? gallery : [row.image ?? ''],
+        sizes: (row.sizes ?? []).filter(Boolean) as string[],
       }
     })
 }
