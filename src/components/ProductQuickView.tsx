@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/CartProvider";
@@ -326,7 +327,15 @@ function ProductQuickViewBody({
             </p>
           </div>
 
-          <div className="mx-auto flex w-full max-w-[360px] flex-col items-center justify-center self-center pb-4 text-center lg:pb-0">
+          <div className="mx-auto flex w-full max-w-[360px] flex-col items-center justify-start self-start pb-4 pt-1 text-center lg:pb-0">
+            <Link
+              href="/cart"
+              onClick={onClose}
+              className="mb-4 inline-flex min-h-10 items-center justify-center border border-[var(--border)] px-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--foreground)]"
+            >
+              Go to cart
+            </Link>
+
             <div className="mx-auto flex w-full flex-wrap items-center justify-center gap-3 text-[11px] text-[var(--foreground)]">
               <h2 className="uppercase tracking-[0.08em] text-[var(--foreground)]">
                 {product.name}

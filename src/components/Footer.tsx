@@ -1,6 +1,25 @@
 import Image from "next/image";
 
 export default function Footer() {
+  const whatsappNumber = "234815389505";
+  const socialLinks = [
+    {
+      label: "Instagram",
+      icon: "IG",
+      href: "https://www.instagram.com/lina_trimfit?igsh=MWtmcjZ3MGEwOXAxaQ==",
+    },
+    {
+      label: "WhatsApp",
+      icon: "WA",
+      href: `https://wa.me/${whatsappNumber}`,
+    },
+    {
+      label: "TikTok",
+      icon: "TT",
+      href: "https://www.tiktok.com/@lina_trimfit?_r=1&_t=ZS-96fD7WdIFRk",
+    },
+  ];
+
   return (
     <footer className="mt-10 border-t border-[var(--border)] bg-[var(--footer-bg)]">
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
@@ -36,14 +55,10 @@ export default function Footer() {
             Socials
           </h4>
           <div className="mt-4 flex items-center gap-3 text-[var(--muted)]">
-            {[
-              { label: "Instagram", icon: "IG" },
-              { label: "WhatsApp", icon: "WA" },
-              { label: "TikTok", icon: "TT" },
-            ].map((item) => (
+            {socialLinks.map((item) => (
               <a
                 key={item.label}
-                href="#"
+                href={item.href}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={item.label}

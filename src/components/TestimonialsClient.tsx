@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import type { Testimonial } from "@/lib/testimonials";
 
@@ -9,7 +9,7 @@ function ArrowIcon({ direction }: { direction: "left" | "right" }) {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-5 w-5"
+      className="h-4 w-4"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
@@ -48,82 +48,154 @@ function wrapIndex(index: number, length: number) {
   return (index + length) % length;
 }
 
-function SectionHeader({
-  eyebrow,
-  title,
+function CarouselShell({
+  children,
+  onPrevious,
+  onNext,
+  showControls,
 }: {
-  eyebrow: string;
-  title: string;
+  children: React.ReactNode;
+  onPrevious: () => void;
+  onNext: () => void;
+  showControls: boolean;
 }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
-      <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--accent)]">
-        {eyebrow}
-      </p>
-      <h2 className="mt-3 text-2xl text-[var(--foreground)] sm:text-3xl">
-        {title}
-      </h2>
-    </div>
+    <section className="space-y-4">
+      <div className="flex justify-center gap-2">
+        {showControls ? (
+          <>
+            <button
+              type="button"
+              onClick={onPrevious}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,transparent)] text-[var(--foreground)] shadow-sm transition duration-300 hover:-translate-x-0.5 hover:bg-[var(--card)]"
+              aria-label="Show previous testimonials"
+            >
+              <ArrowIcon direction="left" />
+            </button>
+            <button
+              type="button"
+              onClick={onNext}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,transparent)] text-[var(--foreground)] shadow-sm transition duration-300 hover:translate-x-0.5 hover:bg-[var(--card)]"
+              aria-label="Show next testimonials"
+            >
+              <ArrowIcon direction="right" />
+            </button>
+          </>
+        ) : null}
+      </div>
+      {children}
+    </section>
   );
 }
 
-function SliderControls({
-  count,
-  activeIndex,
-  onPrevious,
-  onNext,
-  onSelect,
+function InfiniteTrack({
+  items,
+  cloneCount,
+  cardClassName,
+  renderItem,
 }: {
-  count: number;
-  activeIndex: number;
-  onPrevious: () => void;
-  onNext: () => void;
-  onSelect: (index: number) => void;
+  items: Testimonial[];
+  cloneCount: number;
+  cardClassName: string;
+  renderItem: (item: Testimonial, logicalIndex: number) => React.ReactNode;
 }) {
-  if (count <= 1) {
-    return null;
+  const normalizedCloneCount = Math.min(cloneCount, Math.max(items.length, 1));
+  const leadItems = items.slice(-normalizedCloneCount);
+  const tailItems = items.slice(0, normalizedCloneCount);
+  const displayItems = [...leadItems, ...items, ...tailItems];
+  const [currentIndex, setCurrentIndex] = useState(normalizedCloneCount);
+  const [stepWidth, setStepWidth] = useState(0);
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const measure = () => {
+      const track = trackRef.current;
+      if (!track) return;
+
+      const sampleCard = track.querySelector<HTMLElement>("[data-carousel-card]");
+      if (!sampleCard) return;
+
+      const styles = window.getComputedStyle(track);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap || "0");
+      setStepWidth(sampleCard.offsetWidth + gap);
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [items.length]);
+
+  useEffect(() => {
+    if (!transitionEnabled) {
+      const frame = window.requestAnimationFrame(() => {
+        setTransitionEnabled(true);
+      });
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, [transitionEnabled]);
+
+  const showControls = items.length > 1;
+
+  function handlePrevious() {
+    if (!showControls) return;
+    setCurrentIndex((current) => current - 1);
+  }
+
+  function handleNext() {
+    if (!showControls) return;
+    setCurrentIndex((current) => current + 1);
+  }
+
+  function handleTransitionEnd() {
+    if (items.length === 0) return;
+
+    if (currentIndex < normalizedCloneCount) {
+      setTransitionEnabled(false);
+      setCurrentIndex(currentIndex + items.length);
+      return;
+    }
+
+    if (currentIndex >= items.length + normalizedCloneCount) {
+      setTransitionEnabled(false);
+      setCurrentIndex(currentIndex - items.length);
+    }
   }
 
   return (
-    <div className="mt-6 flex items-center justify-center gap-4">
-      <button
-        type="button"
-        onClick={onPrevious}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,transparent)] text-[var(--foreground)]"
-        aria-label="Show previous testimonial"
-      >
-        <ArrowIcon direction="left" />
-      </button>
+    <CarouselShell
+      onPrevious={handlePrevious}
+      onNext={handleNext}
+      showControls={showControls}
+    >
+      <div className="overflow-hidden">
+        <div
+          ref={trackRef}
+          onTransitionEnd={handleTransitionEnd}
+          className={`flex gap-3 will-change-transform ${
+            transitionEnabled ? "duration-500 ease-out" : "duration-0"
+          } transition-transform`}
+          style={{
+            transform: `translateX(-${currentIndex * stepWidth}px)`,
+          }}
+        >
+          {displayItems.map((item, index) => {
+            const logicalIndex = wrapIndex(index - normalizedCloneCount, items.length);
 
-      <div className="flex items-center justify-center gap-2">
-        {Array.from({ length: count }).map((_, index) => {
-          const isActive = index === activeIndex;
-
-          return (
-            <button
-              key={index}
-              type="button"
-              onClick={() => onSelect(index)}
-              className={`h-2.5 w-2.5 rounded-full transition ${
-                isActive
-                  ? "bg-[var(--foreground)]"
-                  : "bg-[color:color-mix(in_srgb,var(--foreground)_24%,transparent)]"
-              }`}
-              aria-label={`Go to testimonial ${index + 1}`}
-            />
-          );
-        })}
+            return (
+              <div
+                key={`${item.id}-${index}`}
+                data-carousel-card
+                className={`shrink-0 ${cardClassName}`}
+              >
+                {renderItem(item, logicalIndex)}
+              </div>
+            );
+          })}
+        </div>
       </div>
-
-      <button
-        type="button"
-        onClick={onNext}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,transparent)] text-[var(--foreground)]"
-        aria-label="Show next testimonial"
-      >
-        <ArrowIcon direction="right" />
-      </button>
-    </div>
+    </CarouselShell>
   );
 }
 
@@ -132,11 +204,11 @@ function TestimonialMeta({ item }: { item: Testimonial }) {
 
   return (
     <div>
-      <h3 className="text-base font-semibold text-[var(--foreground)]">
+      <h3 className="text-sm font-semibold text-[var(--foreground)]">
         {item.name}
       </h3>
       {meta ? (
-        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[var(--accent)]">
+        <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-[var(--accent)]">
           {meta}
         </p>
       ) : null}
@@ -144,163 +216,134 @@ function TestimonialMeta({ item }: { item: Testimonial }) {
   );
 }
 
-function TextTestimonialsSlider({
+function TextTestimonialsCarousel({
   testimonials,
 }: {
   testimonials: Testimonial[];
 }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const safeIndex = wrapIndex(activeIndex, testimonials.length);
-  const activeItem = testimonials[safeIndex];
-
-  if (!activeItem) {
-    return null;
-  }
-
   return (
-    <section className="space-y-6">
-      <SectionHeader
-        eyebrow="What They Said"
-        title="Text-first testimonials"
-      />
-
-      <article className="mx-auto flex w-full max-w-3xl flex-col items-center rounded-[2rem] border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,transparent)] px-6 py-8 text-center shadow-[var(--shadow)] backdrop-blur-sm sm:px-10 sm:py-10">
-        <p className="text-lg leading-8 text-[var(--foreground)] sm:text-2xl sm:leading-10">
-          &ldquo;{activeItem.quote || activeItem.statusText}&rdquo;
-        </p>
-
-        <div className="mt-6 space-y-2">
-          <TestimonialMeta item={activeItem} />
-          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
-            {formatPostedAt(activeItem.publishedAt)}
+    <InfiniteTrack
+      items={testimonials}
+      cloneCount={4}
+      cardClassName="w-[220px] sm:w-[205px] lg:w-[215px]"
+      renderItem={(item) => (
+        <article className="flex min-h-[170px] h-full flex-col justify-between rounded-[1.15rem] border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,transparent)] p-3 shadow-[var(--shadow)] backdrop-blur-sm">
+          <p className="text-[12px] leading-5 text-[var(--foreground)]">
+            &ldquo;{item.quote || item.statusText}&rdquo;
           </p>
-        </div>
-      </article>
 
-      <SliderControls
-        count={testimonials.length}
-        activeIndex={safeIndex}
-        onPrevious={() =>
-          setActiveIndex((current) => wrapIndex(current - 1, testimonials.length))
-        }
-        onNext={() =>
-          setActiveIndex((current) => wrapIndex(current + 1, testimonials.length))
-        }
-        onSelect={setActiveIndex}
-      />
-    </section>
+          <div className="mt-3 space-y-1.5 border-t border-[color:color-mix(in_srgb,var(--border)_72%,transparent)] pt-3">
+            <TestimonialMeta item={item} />
+            <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--muted)]">
+              {formatPostedAt(item.publishedAt)}
+            </p>
+          </div>
+        </article>
+      )}
+    />
   );
 }
 
-function ImageTestimonialsSlider({
+function ImageTestimonialsCarousel({
   testimonials,
   onOpen,
 }: {
   testimonials: Testimonial[];
   onOpen: (index: number) => void;
 }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [showOverlayText, setShowOverlayText] = useState(true);
-  const safeIndex = wrapIndex(activeIndex, testimonials.length);
-  const activeItem = testimonials[safeIndex];
+  const [hiddenOverlayIds, setHiddenOverlayIds] = useState<string[]>([]);
 
-  if (!activeItem) {
-    return null;
+  function toggleOverlay(id: string) {
+    setHiddenOverlayIds((current) =>
+      current.includes(id)
+        ? current.filter((itemId) => itemId !== id)
+        : [...current, id]
+    );
   }
 
   return (
-    <section className="space-y-6 pt-4 sm:pt-8">
-      <SectionHeader eyebrow="With Photos" title="Image testimonials" />
+    <InfiniteTrack
+      items={testimonials}
+      cloneCount={4}
+      cardClassName="w-[210px] sm:w-[200px] lg:w-[205px]"
+      renderItem={(item, logicalIndex) => {
+        const showOverlayText = !hiddenOverlayIds.includes(item.id);
 
-      <article className="group mx-auto w-full max-w-sm overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_88%,transparent)] shadow-[var(--shadow)] backdrop-blur-sm">
-        <div className="block w-full text-left">
-          <div className="relative aspect-[4/5] overflow-hidden">
-            {activeItem.image ? (
-              <Image
-                src={activeItem.image}
-                alt={`${activeItem.name} testimonial`}
-                fill
-                sizes="(max-width: 640px) 100vw, 420px"
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              />
-            ) : null}
-
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.05)_20%,rgba(8,8,8,0.8)_100%)]" />
-
-            <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4">
-              <div className="rounded-full border border-white/18 bg-black/30 px-3 py-1 text-[9px] uppercase tracking-[0.22em] text-white/84 backdrop-blur-md">
-                {activeItem.city || activeItem.name}
-              </div>
-              <div className="rounded-full border border-white/18 bg-black/30 px-3 py-1 text-[9px] uppercase tracking-[0.18em] text-white/70 backdrop-blur-md">
-                {formatPostedAt(activeItem.publishedAt)}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowOverlayText((current) => !current)}
-              className="absolute inset-0 z-10"
-              aria-label={
-                showOverlayText ? "Hide testimonial text" : "Show testimonial text"
-              }
-            />
-
-            <div
-              className={`absolute inset-x-0 bottom-0 z-20 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.28)_24%,rgba(0,0,0,0.86)_100%)] px-5 pb-5 pt-12 text-white transition duration-300 ${
-                showOverlayText
-                  ? "translate-y-0 opacity-100"
-                  : "pointer-events-none translate-y-4 opacity-0"
-              }`}
-            >
-              <div className="space-y-3">
-                {activeItem.statusText ? (
-                  <p className="max-w-[24ch] text-lg leading-7">
-                    {activeItem.statusText}
-                  </p>
+        return (
+          <article className="group overflow-hidden rounded-[1.15rem] border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_88%,transparent)] shadow-[var(--shadow)] backdrop-blur-sm">
+            <div className="block w-full text-left">
+              <div className="relative aspect-[4/5.1] overflow-hidden">
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={`${item.name} testimonial`}
+                    fill
+                    sizes="210px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
                 ) : null}
 
-                {activeItem.quote ? (
-                  <p className="max-w-[28ch] text-sm leading-6 text-white/84">
-                    &ldquo;{activeItem.quote}&rdquo;
-                  </p>
-                ) : null}
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.05)_20%,rgba(8,8,8,0.82)_100%)]" />
+
+                <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-2.5">
+                  <div className="rounded-full border border-white/18 bg-black/30 px-2 py-1 text-[8px] uppercase tracking-[0.18em] text-white/84 backdrop-blur-md">
+                    {item.city || item.name}
+                  </div>
+                  <div className="rounded-full border border-white/18 bg-black/30 px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-white/70 backdrop-blur-md">
+                    {formatPostedAt(item.publishedAt)}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => toggleOverlay(item.id)}
+                  className="absolute inset-0 z-10"
+                  aria-label={
+                    showOverlayText ? "Hide testimonial text" : "Show testimonial text"
+                  }
+                />
+
+                <div
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.34)_24%,rgba(0,0,0,0.92)_100%)] px-3 pb-3 pt-9 text-white transition-all duration-300 ${
+                    showOverlayText
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-4 opacity-0"
+                  }`}
+                >
+                  <div className="space-y-2">
+                    {item.statusText ? (
+                      <p className="max-w-[18ch] text-[13px] leading-5">
+                        {item.statusText}
+                      </p>
+                    ) : null}
+
+                    {item.quote ? (
+                      <p className="max-w-[18ch] text-[10px] leading-4 text-white/84">
+                        &ldquo;{item.quote}&rdquo;
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 px-3 pb-3 pt-2.5 text-center text-[var(--foreground)]">
+                <TestimonialMeta item={item} />
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => onOpen(logicalIndex)}
+                    className="inline-flex min-h-[28px] items-center justify-center rounded-full border border-[var(--border)] px-3 py-1.5 text-[9px] uppercase tracking-[0.16em] text-[var(--foreground)]"
+                    aria-label={`Open ${item.name}'s testimonial`}
+                  >
+                    Open
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="space-y-3 px-5 pb-5 pt-4 text-center text-[var(--foreground)]">
-            <TestimonialMeta item={activeItem} />
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => onOpen(safeIndex)}
-                className="inline-flex min-h-[38px] items-center justify-center rounded-full border border-[var(--border)] px-4 py-2 text-[11px] uppercase tracking-[0.16em] text-[var(--foreground)]"
-                aria-label={`Open ${activeItem.name}'s testimonial`}
-              >
-                Open
-              </button>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <SliderControls
-        count={testimonials.length}
-        activeIndex={safeIndex}
-        onPrevious={() => {
-          setShowOverlayText(true);
-          setActiveIndex((current) => wrapIndex(current - 1, testimonials.length));
-        }}
-        onNext={() => {
-          setShowOverlayText(true);
-          setActiveIndex((current) => wrapIndex(current + 1, testimonials.length));
-        }}
-        onSelect={(index) => {
-          setShowOverlayText(true);
-          setActiveIndex(index);
-        }}
-      />
-    </section>
+          </article>
+        );
+      }}
+    />
   );
 }
 
@@ -392,13 +435,13 @@ export default function TestimonialsClient({
       <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--accent)_20%,transparent),transparent_34%),linear-gradient(180deg,color-mix(in_srgb,var(--background)_78%,#20180a)_0%,var(--background)_56%,color-mix(in_srgb,var(--background)_92%,#000)_100%)] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_6%,transparent),transparent)]" />
 
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12">
+        <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-10">
           {textTestimonials.length > 0 ? (
-            <TextTestimonialsSlider testimonials={textTestimonials} />
+            <TextTestimonialsCarousel testimonials={textTestimonials} />
           ) : null}
 
           {imageTestimonials.length > 0 ? (
-            <ImageTestimonialsSlider
+            <ImageTestimonialsCarousel
               testimonials={imageTestimonials}
               onOpen={setActiveImageIndex}
             />

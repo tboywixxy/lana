@@ -25,17 +25,17 @@
 }
 
 :root {
-  --background: #fcfcfc;
+  --background: #f4f5f7;
   --foreground: #171717;
   --muted: #6b7280;
-  --card: #ffffff;
-  --card-soft: #f7f7f8;
-  --header-bg: rgba(255, 255, 255, 0.88);
-  --footer-bg: #f3f4f6;
+  --card: #fbfbfc;
+  --card-soft: #eef0f3;
+  --header-bg: rgba(248, 249, 251, 0.9);
+  --footer-bg: #ebeef2;
   --border: #e5e7eb;
   --accent: #b88a2f;
   --accent-foreground: #ffffff;
-  --surface: #f3f4f6;
+  --surface: #ebeef2;
   --shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
 }
 

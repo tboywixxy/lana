@@ -87,7 +87,7 @@ export default function CheckoutPage() {
     return (
       <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
-          <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--card)] px-6 py-12 text-center shadow-[var(--shadow)] sm:px-8">
+          <div className="bg-[var(--card)] px-6 py-12 text-center sm:px-8">
             <h2 className="text-2xl font-semibold">No items in cart</h2>
             <p className="mt-3 text-[var(--muted)]">Add products first before checkout.</p>
             <Link

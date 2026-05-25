@@ -23,7 +23,7 @@ export default function CartPage() {
         </div>
 
         {items.length === 0 ? (
-          <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--card)] px-6 py-12 text-center shadow-[var(--shadow)] sm:px-8">
+          <div className="bg-[var(--card)] px-6 py-12 text-center sm:px-8">
             <h2 className="text-2xl font-semibold">Your cart is empty</h2>
             <p className="mt-3 text-[var(--muted)]">
               Add items from the store to continue.

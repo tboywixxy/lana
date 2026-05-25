@@ -9,6 +9,26 @@ import { useSearch } from "@/components/SearchContext";
 import ThemeToggle from "@/components/ThemeToggle";
 import SearchBar from "@/components/SearchBar";
 
+function CartIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 6h15l-1.5 9h-12z" />
+      <path d="M6 6l-1-2H2" />
+      <circle cx="9" cy="20" r="1" />
+      <circle cx="18" cy="20" r="1" />
+    </svg>
+  );
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const { cartCount } = useCart();
@@ -77,25 +97,38 @@ export default function Navbar() {
           <ThemeToggle />
         </div>
 
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center text-[var(--foreground)] md:hidden"
-          onClick={() => setOpen((prev) => !prev)}
-          aria-label="Toggle menu"
-        >
-          <div className="relative flex h-6 w-6 items-center justify-center">
-            <span
-              className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ${
-                open ? "rotate-45" : "-translate-y-1.5"
-              }`}
-            />
-            <span
-              className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ${
-                open ? "-rotate-45" : "translate-y-1.5"
-              }`}
-            />
-          </div>
-        </button>
+        <div className="flex items-center gap-1.5 md:hidden">
+          <Link
+            href="/cart"
+            className="relative inline-flex h-10 w-10 items-center justify-center text-[var(--foreground)]"
+            aria-label="Open cart"
+          >
+            <CartIcon />
+            <span className="absolute right-0.5 top-0.5 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-semibold text-[var(--accent-foreground)]">
+              {cartCount}
+            </span>
+          </Link>
+
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center text-[var(--foreground)]"
+            onClick={() => setOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            <div className="relative flex h-6 w-6 items-center justify-center">
+              <span
+                className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ${
+                  open ? "rotate-45" : "-translate-y-1.5"
+                }`}
+              />
+              <span
+                className={`absolute block h-0.5 w-6 bg-current transition-all duration-300 ${
+                  open ? "-rotate-45" : "translate-y-1.5"
+                }`}
+              />
+            </div>
+          </button>
+        </div>
       </div>
 
       {isProductsPage && products.length > 0 && (
