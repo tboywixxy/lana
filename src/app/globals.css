@@ -87,3 +87,112 @@ textarea {
 ::selection {
   background: color-mix(in srgb, var(--accent) 24%, transparent);
 }
+
+.navbar-shell {
+  transition:
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease;
+}
+
+.navbar-inner {
+  min-height: 68px;
+  transition:
+    min-height 220ms ease,
+    gap 220ms ease,
+    padding 220ms ease;
+}
+
+.navbar-logo {
+  height: 36px;
+  transition: height 220ms ease;
+}
+
+.navbar-nav {
+  gap: 1.35rem;
+  transition: gap 220ms ease;
+}
+
+@media (min-width: 640px) {
+  .navbar-logo {
+    height: 40px;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .navbar-shell {
+    animation: navbar-shadow linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 180px;
+  }
+
+  .navbar-inner {
+    animation: navbar-height linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 180px;
+  }
+
+  .navbar-logo {
+    animation: navbar-logo-shrink linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 180px;
+  }
+
+  .navbar-nav {
+    animation: navbar-gap linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 180px;
+  }
+}
+
+@keyframes navbar-height {
+  from {
+    min-height: 68px;
+  }
+
+  to {
+    min-height: 54px;
+  }
+}
+
+@keyframes navbar-logo-shrink {
+  from {
+    height: 36px;
+  }
+
+  to {
+    height: 28px;
+  }
+}
+
+@keyframes navbar-gap {
+  from {
+    gap: 1.35rem;
+  }
+
+  to {
+    gap: 1rem;
+  }
+}
+
+@keyframes navbar-shadow {
+  from {
+    box-shadow: 0 0 0 rgba(15, 23, 42, 0);
+  }
+
+  to {
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+  }
+}
+
+@media (min-width: 640px) {
+  @keyframes navbar-logo-shrink {
+    from {
+      height: 40px;
+    }
+
+    to {
+      height: 32px;
+    }
+  }
+}

@@ -76,46 +76,56 @@ function ProductCard({
 
   return (
     <>
-      <article className="relative">
-        <button
-          type="button"
-          onClick={() => onOpen(index)}
-          className="group block w-full text-center cursor-pointer"
-        >
-          <div className="relative mx-auto aspect-[4/4.2] w-full overflow-hidden bg-transparent">
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-              className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-            />
+      <article className="relative border-b border-dashed border-[var(--foreground)]/20 animate-in slide-in-from-bottom-4 fade-in duration-500">
+        <div className="group relative overflow-hidden px-0 py-3">
+          <div className="pointer-events-none absolute inset-x-6 top-0 h-24 rounded-full bg-[color-mix(in_srgb,var(--accent)_16%,transparent)] blur-3xl" />
 
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 text-[11px] uppercase tracking-[0.16em] text-[var(--background)] opacity-0 transition duration-300 group-hover:bg-black/40 group-hover:opacity-100">
-              Click to enlarge
+          <button
+            type="button"
+            onClick={() => onOpen(index)}
+            className="block w-full cursor-pointer text-left"
+          >
+            <div className="relative overflow-hidden bg-[linear-gradient(180deg,color-mix(in_srgb,var(--card-soft)_72%,white),color-mix(in_srgb,var(--surface)_92%,black))] pb-2">
+
+              <div className="relative mx-auto aspect-[4/4.2] w-full overflow-hidden">
+                <div className="absolute inset-x-[12%] bottom-[7%] h-8 rounded-full bg-black/12 blur-2xl dark:bg-black/40" />
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                />
+
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,transparent_42%,rgba(0,0,0,0.08)_100%)]" />
+              </div>
             </div>
-          </div>
 
-          <div className="mt-3 space-y-1">
-            <h3 className="text-[11px] font-normal uppercase tracking-[0.08em] text-[var(--foreground)]">
-              {product.name}
-            </h3>
+            <div className="space-y-3 px-1 pb-1 pt-4">
+              <div className="space-y-2">
+                <h3 className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--foreground)]">
+                  {product.name}
+                </h3>
 
-            <p className="text-[11px] text-[var(--foreground)]">
-              ₦{product.price.toLocaleString()}
-            </p>
-          </div>
-        </button>
+                <div className="flex items-end justify-between gap-3">
+                  <p className="text-base font-semibold text-[var(--foreground)]">
+                    ₦{product.price.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setShowSizePopup(true)}
-          className="mt-3 inline-flex min-h-[38px] min-w-[120px] items-center justify-center gap-2 rounded-full border border-[var(--foreground)] px-4 py-2 text-[11px] uppercase tracking-[0.08em] text-[var(--foreground)] hover:bg-[var(--card-soft)]"
-          aria-label="Open size selection"
-        >
-          <CartIcon />
-          Add to cart
-        </button>
+          <button
+            type="button"
+            onClick={() => setShowSizePopup(true)}
+            className="mt-4 inline-flex min-h-[42px] w-full items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-transparent px-4 py-2 text-[11px] uppercase tracking-[0.12em] text-[var(--foreground)] hover:opacity-92"
+            aria-label="Open size selection"
+          >
+            <CartIcon className="h-4 w-4" />
+            Add to cart
+          </button>
+        </div>
       </article>
 
       {showSizePopup && (
@@ -127,11 +137,11 @@ function ProductCard({
             aria-label="Close size popup"
           />
 
-          <div className="relative z-10 w-full max-w-[320px] border border-[var(--border)] bg-[var(--background)] px-5 py-5 shadow-sm">
+          <div className="relative z-10 w-full max-w-[320px] rounded-[1.5rem] border border-[var(--border)] bg-[var(--background)] px-5 py-5 shadow-[var(--shadow)]">
             <button
               type="button"
               onClick={closePopup}
-              className="absolute left-2 top-2 inline-flex h-9 w-9 items-center justify-center border border-[var(--border)] text-[24px] font-semibold leading-none text-[var(--foreground)]"
+              className="absolute left-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] text-[24px] font-semibold leading-none text-[var(--foreground)]"
               aria-label="Back"
             >
               ‹
@@ -142,9 +152,7 @@ function ProductCard({
                 {product.name}
               </p>
 
-              <p className="mt-2 text-[11px] text-[var(--foreground)]">
-                Select size
-              </p>
+              <p className="mt-2 text-[11px] text-[var(--foreground)]">Select size</p>
 
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                 {sizes.map((size) => {
@@ -158,9 +166,9 @@ function ProductCard({
                         setSelectedSize(size);
                         setAddedMessage("");
                       }}
-                      className={`min-w-[38px] border px-3 py-2 text-[11px] uppercase tracking-[0.05em] ${
+                      className={`min-w-[38px] rounded-full border px-3 py-2 text-[11px] uppercase tracking-[0.05em] ${
                         active
-                          ? "border-[var(--foreground)] text-[var(--foreground)]"
+                          ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]"
                           : "border-[var(--border)] text-[var(--foreground)]"
                       }`}
                     >
@@ -174,20 +182,20 @@ function ProductCard({
                 <button
                   type="button"
                   onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                  className="inline-flex h-8 w-8 items-center justify-center border border-[var(--border)] text-[18px] text-[var(--foreground)]"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] text-[18px] text-[var(--foreground)]"
                   aria-label="Decrease quantity"
                 >
-                  −
+                  -
                 </button>
 
-                <div className="inline-flex min-w-[44px] items-center justify-center border border-[var(--border)] px-3 py-2 text-[11px] text-[var(--foreground)]">
+                <div className="inline-flex min-w-[44px] items-center justify-center rounded-full border border-[var(--border)] px-3 py-2 text-[11px] text-[var(--foreground)]">
                   {quantity}
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setQuantity((prev) => prev + 1)}
-                  className="inline-flex h-8 w-8 items-center justify-center border border-[var(--border)] text-[18px] text-[var(--foreground)]"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] text-[18px] text-[var(--foreground)]"
                   aria-label="Increase quantity"
                 >
                   +
@@ -197,16 +205,14 @@ function ProductCard({
               <button
                 type="button"
                 onClick={addSelectedToCart}
-                className="mt-4 inline-flex min-h-[38px] items-center justify-center gap-2 border border-[var(--foreground)] px-5 py-2 text-[11px] uppercase tracking-[0.08em] text-[var(--foreground)]"
+                className="mt-4 inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full bg-[var(--foreground)] px-5 py-2 text-[11px] uppercase tracking-[0.08em] text-[var(--background)]"
               >
                 <CartIcon className="h-4 w-4" />
                 Cart
               </button>
 
               {addedMessage ? (
-                <p className="mt-3 text-[11px] text-[var(--foreground)]">
-                  {addedMessage}
-                </p>
+                <p className="mt-3 text-[11px] text-[var(--foreground)]">{addedMessage}</p>
               ) : null}
             </div>
           </div>

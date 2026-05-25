@@ -35,24 +35,26 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
 
-  useEffect(() => {
     try {
       const saved = localStorage.getItem("lana-cart");
       if (saved) {
-        setItems(JSON.parse(saved));
+        return JSON.parse(saved);
       }
     } catch {
-      setItems([]);
     }
-  }, []);
+
+    return [];
+  });
 
   useEffect(() => {
     try {
       localStorage.setItem("lana-cart", JSON.stringify(items));
     } catch {
-      // ignore localStorage write errors
     }
   }, [items]);
 
@@ -93,7 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const cartCount = useMemo(
-    () => items.reduce((sum, item) => sum + item.quantity, 0),
+    () => items.length,
     [items]
   );
 

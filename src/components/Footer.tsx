@@ -23,10 +23,10 @@ export default function Footer() {
           </h4>
           <div className="mt-4 flex flex-col gap-3 text-sm text-[var(--muted)]">
             <a href="mailto:hello@lanastore.com" className="hover:text-[var(--foreground)]">
-              hello@lanastore.com
+              itunuolatunde08@gmail.com
             </a>
-            <a href="tel:+2348000000000" className="hover:text-[var(--foreground)]">
-              +234 800 000 0000
+            <a href="tel:+234 815 389 505" className="hover:text-[var(--foreground)]">
+              +234 815 389 505
             </a>
           </div>
         </div>

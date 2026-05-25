@@ -5,12 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/components/CartProvider";
+import { useSearch } from "@/components/SearchContext";
 import ThemeToggle from "@/components/ThemeToggle";
+import SearchBar from "@/components/SearchBar";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { cartCount } = useCart();
+  const { products } = useSearch();
   const [open, setOpen] = useState(false);
+  const isProductsPage = pathname === "/";
 
   function closeMenu() {
     setOpen(false);
@@ -24,28 +28,29 @@ export default function Navbar() {
     "rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-4 py-3 text-sm transition-colors";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-xl">
-      <div className="mx-auto flex min-h-[78px] w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="navbar-shell sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-xl">
+      <div
+        className="navbar-inner mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
+      >
         <Link href="/" className="shrink-0" onClick={closeMenu}>
           <Image
             src="/lana-logo-transparent.png"
             alt="LANA logo"
             width={120}
             height={52}
-            className="h-10 w-auto rounded-md object-contain sm:h-11"
+            className="navbar-logo w-auto rounded-md object-contain"
           />
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
+        {isProductsPage && products.length > 0 && (
+          <div className="hidden flex-1 md:block md:px-4 animate-in fade-in slide-in-from-left duration-500">
+            <SearchBar products={products} onResults={() => {}} />
+          </div>
+        )}
+
+        <nav className="navbar-nav hidden items-center md:flex">
           <Link href="/" className={pathname === "/" ? activeLink : linkBase}>
             Products
-          </Link>
-
-          <Link
-            href="/track-order"
-            className={pathname === "/track-order" ? activeLink : linkBase}
-          >
-            Track Order
           </Link>
 
           <Link
@@ -93,6 +98,12 @@ export default function Navbar() {
         </button>
       </div>
 
+      {isProductsPage && products.length > 0 && (
+        <div className="border-t border-[var(--border)] px-4 py-3 md:hidden animate-in slide-in-from-top duration-500">
+          <SearchBar products={products} onResults={() => {}} />
+        </div>
+      )}
+
       {open && (
         <div
           className="fixed inset-0 z-30 bg-black/45 md:hidden"
@@ -102,13 +113,22 @@ export default function Navbar() {
       )}
 
       <div
-        className={`fixed inset-y-0 left-0 z-40 h-screen w-80 transform border-r border-[var(--border)] bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden dark:bg-neutral-950 ${
+        className={`fixed inset-y-0 left-0 z-40 h-screen w-80 transform border-r border-[var(--border)] bg-[var(--card)] shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-full min-h-screen flex-col bg-white px-6 py-6 dark:bg-neutral-950">
-          <div className="mb-8">
+        <div className="flex h-full min-h-screen flex-col bg-[var(--card)] px-6 py-6">
+          <div className="mb-8 flex items-center justify-between gap-4">
             <ThemeToggle />
+
+            <button
+              type="button"
+              onClick={closeMenu}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground)]"
+              aria-label="Close menu"
+            >
+              <span className="text-xl leading-none">×</span>
+            </button>
           </div>
 
           <nav className="flex flex-col gap-3">
@@ -122,18 +142,6 @@ export default function Navbar() {
               }`}
             >
               Products
-            </Link>
-
-            <Link
-              href="/track-order"
-              onClick={closeMenu}
-              className={`${mobileItemBase} ${
-                pathname === "/track-order"
-                  ? "text-[var(--foreground)] ring-1 ring-[var(--foreground)]/10"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              Track Order
             </Link>
 
             <Link

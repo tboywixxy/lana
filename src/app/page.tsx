@@ -1,4 +1,3 @@
-import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
 import { getProducts } from "@/lib/products";
 
@@ -7,7 +6,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero />
       <ProductGrid products={products} />
     </>
   );

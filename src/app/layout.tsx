@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartProvider";
+import { SearchProvider } from "@/components/SearchContext";
 
 export const metadata: Metadata = {
   title: "LANA Store",
@@ -19,13 +20,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-[#060606] text-white antialiased">
+      <body className="bg-[var(--background)] text-[var(--foreground)] antialiased">
         <CartProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <SearchProvider>
+            <div className="min-h-screen flex flex-col">
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </SearchProvider>
         </CartProvider>
       </body>
     </html>
