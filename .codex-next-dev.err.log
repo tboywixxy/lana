@@ -1,0 +1,2 @@
+⚠ Port 3000 is in use by process 18672, using available port 3001 instead.
+[browser] Image with src "/lana-logo-transparent.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.

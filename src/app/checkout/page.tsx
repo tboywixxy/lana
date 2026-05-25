@@ -27,6 +27,7 @@ export default function CheckoutPage() {
       name: item.name,
       price: item.price,
       quantity: item.quantity,
+      size: item.size,
       image: item.image,
     }));
   }, [items]);
@@ -57,11 +58,6 @@ export default function CheckoutPage() {
         throw new Error(data?.message || "Failed to place order");
       }
 
-      setSuccess({
-        orderId: data.orderId,
-        trackingCode: data.trackingCode,
-      });
-
       clearCart();
       setForm({
         fullName: "",
@@ -69,6 +65,16 @@ export default function CheckoutPage() {
         phone: "",
         address: "",
         note: "",
+      });
+
+      if (data.whatsappUrl) {
+        window.location.assign(data.whatsappUrl);
+        return;
+      }
+
+      setSuccess({
+        orderId: data.orderId,
+        trackingCode: data.trackingCode,
       });
     } catch (error) {
       alert(error instanceof Error ? error.message : "Something went wrong");
@@ -111,6 +117,8 @@ export default function CheckoutPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">
             No account needed. Just enter your details and place your order.
+            After submission, you will be redirected to WhatsApp to send the
+            order details.
           </p>
         </div>
 
@@ -235,7 +243,7 @@ export default function CheckoutPage() {
                 disabled={loading}
                 className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--foreground)] px-6 text-sm font-semibold text-[var(--background)] hover:opacity-92 disabled:opacity-60"
               >
-                {loading ? "Processing..." : "Place order"}
+                {loading ? "Preparing WhatsApp..." : "Place order on WhatsApp"}
               </button>
             </form>
 

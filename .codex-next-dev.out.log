@@ -1,0 +1,12 @@
+
+> lana-store@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.56.1:3001
+- Environments: .env
+✓ Ready in 2.5s
+Creating turbopack project { dir: 'C:\\Users\\user\\Desktop\\lana', testMode: true }
+
+ GET / 200 in 4.9s (next.js: 1038ms, application-code: 3.8s)
