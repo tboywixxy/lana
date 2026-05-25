@@ -40,7 +40,7 @@ function formatPostedAt(value: string) {
 }
 
 function joinMeta(role: string, city: string) {
-  return [role, city].filter(Boolean).join(" · ");
+  return [role, city].filter(Boolean).join(" | ");
 }
 
 function wrapIndex(index: number, length: number) {
@@ -180,18 +180,13 @@ function TextTestimonialsSlider({
       <SliderControls
         count={testimonials.length}
         activeIndex={safeIndex}
-        onPrevious={() => {
-          setShowOverlayText(true);
-          setActiveIndex((current) => wrapIndex(current - 1, testimonials.length));
-        }}
-        onNext={() => {
-          setShowOverlayText(true);
-          setActiveIndex((current) => wrapIndex(current + 1, testimonials.length));
-        }}
-        onSelect={(index) => {
-          setShowOverlayText(true);
-          setActiveIndex(index);
-        }}
+        onPrevious={() =>
+          setActiveIndex((current) => wrapIndex(current - 1, testimonials.length))
+        }
+        onNext={() =>
+          setActiveIndex((current) => wrapIndex(current + 1, testimonials.length))
+        }
+        onSelect={setActiveIndex}
       />
     </section>
   );
@@ -215,10 +210,7 @@ function ImageTestimonialsSlider({
 
   return (
     <section className="space-y-6 pt-4 sm:pt-8">
-      <SectionHeader
-        eyebrow="With Photos"
-        title="Image testimonials"
-      />
+      <SectionHeader eyebrow="With Photos" title="Image testimonials" />
 
       <article className="group mx-auto w-full max-w-sm overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_88%,transparent)] shadow-[var(--shadow)] backdrop-blur-sm">
         <div className="block w-full text-left">
@@ -257,7 +249,7 @@ function ImageTestimonialsSlider({
               className={`absolute inset-x-0 bottom-0 z-20 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.28)_24%,rgba(0,0,0,0.86)_100%)] px-5 pb-5 pt-12 text-white transition duration-300 ${
                 showOverlayText
                   ? "translate-y-0 opacity-100"
-                  : "translate-y-4 opacity-0 pointer-events-none"
+                  : "pointer-events-none translate-y-4 opacity-0"
               }`}
             >
               <div className="space-y-3">
@@ -295,13 +287,18 @@ function ImageTestimonialsSlider({
       <SliderControls
         count={testimonials.length}
         activeIndex={safeIndex}
-        onPrevious={() =>
-          setActiveIndex((current) => wrapIndex(current - 1, testimonials.length))
-        }
-        onNext={() =>
-          setActiveIndex((current) => wrapIndex(current + 1, testimonials.length))
-        }
-        onSelect={setActiveIndex}
+        onPrevious={() => {
+          setShowOverlayText(true);
+          setActiveIndex((current) => wrapIndex(current - 1, testimonials.length));
+        }}
+        onNext={() => {
+          setShowOverlayText(true);
+          setActiveIndex((current) => wrapIndex(current + 1, testimonials.length));
+        }}
+        onSelect={(index) => {
+          setShowOverlayText(true);
+          setActiveIndex(index);
+        }}
       />
     </section>
   );
