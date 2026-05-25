@@ -26,7 +26,7 @@ export default function Footer() {
               itunuolatunde08@gmail.com
             </a>
             <a href="tel:+234 815 389 505" className="hover:text-[var(--foreground)]">
-              +234 815 389 505
+              +234 815 389 5905
             </a>
           </div>
         </div>
